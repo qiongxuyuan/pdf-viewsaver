@@ -6,6 +6,7 @@ dot.config();
 //const fileUpload = require('express-fileupload');
 const multer = require('multer');
 const multerUpload = multer({dest: 'frontend/public/uploads/'});
+const {getSignedUrlS3} = require('./aws-s3');
 
 const port = process.env.PORT;
 
@@ -20,14 +21,22 @@ app.get('/testdb', getTestDB);
 
 app.use(cors());
 //app.use(fileUpload());
-app.post('/fileupload', multerUpload.fields([{name: 'pdf', maxCount: 1}]),  (req, res) => {
-    //console.log(req.files);
-    console.log(req.files);
+// app.post('/fileupload', multerUpload.fields([{name: 'pdf', maxCount: 1}]),  (req, res) => {
+//     //console.log(req.files);
+//     console.log(req.files);
     
+//     res.send(
+//         {message: 'file uploaded'}
+//     );
+// });
+app.post('/fileupload',  (req, res) => {
+    const signedUrl = getSignedUrlS3(req.query.name);
     res.send(
-        {message: 'file uploaded'}
+        {signedUrl: signedUrl}
     );
 });
+
+
 
 
 

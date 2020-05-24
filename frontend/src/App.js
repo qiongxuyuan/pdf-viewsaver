@@ -19,20 +19,57 @@ function App() {
       const data = evt.target.result;
       const formData = new FormData();
       formData.append('pdf', file);
+      // axios.post(
+      //   url,
+      //  formData,
+      //   {
+      //     headers:{
+      //       //'Content-Type': 'application/json'
+      //       'Content-Type': 'multipart/form-data',
+      //     }
+      //   }
+      //   ).then(function(response) {
+      //     console.log(response.data);
+      //   }).catch(function (err){
+      //     console.log(err);
+      //   });
+      //console.log(file);
+      const ContentType = 'application/pdf';
+      const fileType = file.type;
+      if(fileType !== ContentType){
+        alert('The file is not PDF');
+        return;
+      }
+
       axios.post(
-        url,
-       formData,
-        {
-          headers:{
-            //'Content-Type': 'application/json'
-            'Content-Type': 'multipart/form-data',
-          }
+        url + '?name=' + file.name 
+      ).then( response => {
+        console.log(response.data);
+        //upload file to AWS
+        const signedUrl = response.data.signedUrl;
+        if(!signedUrl){
+          alert('Error on upload file - can not get signed url');
+          return;
         }
-        ).then(function(response) {
+        axios.put(
+          signedUrl,
+          file,
+          {
+            headers:{
+              //'Content-Type': 'application/json'
+              'Content-Type': ContentType,
+            }
+          }
+        ).then(response => {
           console.log(response.data);
-        }).catch(function (err){
+          //save file data to DB.
+          //notify user file uploaded.
+        }).catch(err => {
           console.log(err);
         });
+      }).catch( err => {
+        console.log(err);
+      });
     };
   }
 
