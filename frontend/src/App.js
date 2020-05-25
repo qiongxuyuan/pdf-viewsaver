@@ -11,8 +11,10 @@ function App() {
   const handleChange = (event) => {
     console.log('handle change', event.target.files);
     const file = event.target.files[0];
+    if(!file) return;
     const reader = new FileReader();
     const url = 'http://localhost:55000/fileupload';
+    const filesUrl = 'http://localhost:55000/files';
     reader.readAsBinaryString(file);
     reader.onload = function (evt){
       console.log(evt.target.result);
@@ -60,10 +62,18 @@ function App() {
               'Content-Type': ContentType,
             }
           }
-        ).then(response => {
-          console.log(response.data);
+        ).then(awsResponse => {
+
+          console.log(awsResponse.data);
           //save file data to DB.
           //notify user file uploaded.
+          const awsFilename = response.data.uploadName;
+          axios.post(filesUrl + '/' + awsFilename).then(postServerResponse => {
+            alert('file saved at http://localhost:55000/files/' + awsFilename);
+          }).catch( err => {
+            console.log(err);
+          });
+
         }).catch(err => {
           console.log(err);
         });

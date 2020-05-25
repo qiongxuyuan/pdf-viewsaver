@@ -44,14 +44,26 @@ console.log(filename);
 const ContentType = 'application/pdf';
 console.log(ContentType);
 
-exports.getSignedUrlS3 = function(filename) {
+exports.getSignedUrlS3PUT = function(awsFilename) {
+    
     const params = {
         Bucket: AWS_BUCKET, 
-        Key: '36901330-1202-41fd-ac44-b2bb68e55657.txt',//uuid.v4() + '-' + filename, 
+        Key: awsFilename, 
         Expires: 300, //in seconds
         ContentType: ContentType,
         };
     const url = s3Obj.getSignedUrl('putObject', params);
+    console.log('The URL is', url); // expires in 60 seconds
+    return url;
+}
+
+exports.getSignedUrlS3GET = function(awsFilename) {
+    const params = {
+        Bucket: AWS_BUCKET, 
+        Key: awsFilename, 
+        Expires: 600, //in seconds
+        };
+    const url = s3Obj.getSignedUrl('getObject', params);
     console.log('The URL is', url); // expires in 60 seconds
     return url;
 }
