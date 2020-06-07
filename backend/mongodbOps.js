@@ -1,7 +1,7 @@
 const mongoDB = require('mongodb');
 const url = 'mongodb://localhost:27017';
 
-const DBName = 'pdf'; //pdf
+const DBName = 'pdf';
 const FilesTable = 'files';
 const mClient = mongoDB.MongoClient;
 
@@ -27,9 +27,6 @@ exports.getTestDB = (req, res) => {
     });
 }
 
-//exports.getTestDB(null, null);
-
-
 const connectDB = (pDBName) => {
     const options = {
         useUnifiedTopology: true, 
@@ -54,8 +51,6 @@ const getRecord = (table, query) => {
     });
 }
 
-
-
 const saveRecord = (table, dataDoc) => {
     return getConnTable(table).then(table => {
         return table.insertOne(dataDoc).then( result => {
@@ -78,15 +73,3 @@ exports.saveRecord = saveRecord;
 exports.deleteRecord = deleteRecord;
 exports.getConnTable = getConnTable;
 exports.FilesTable = FilesTable;
-
-// saveRecord('files', {'name': '042a3dff-1656-45ce-acc2-dc0eaa9c8ebe.txt'}).then(result => {
-//     getRecord('files', {_id: result.insertedId});
-// });
-//getRecord('files', {name: '042a3dff-1656-45ce-acc2-dc0eaa9c8ebe.txt'});
-
-//getRecord('testtable', {name:'hello'});
-// connectDB(dbName).then(db => {
-//     console.log('connect to ' + dbName);
-// }).catch( err => {
-//     console.log(err);
-// });
