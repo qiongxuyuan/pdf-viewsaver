@@ -2152,7 +2152,9 @@ var PDFViewerApplication = {
 exports.PDFViewerApplication = PDFViewerApplication;
 var validateFileURL;
 {
-  var HOSTED_VIEWER_ORIGINS = ["http://localhost:3000", "null", "http://mozilla.github.io", "https://mozilla.github.io"];
+
+  //QXY custom changes: pretty URL
+  var HOSTED_VIEWER_ORIGINS = ["https://qxy-pdf.s3.amazonaws.com", "http://localhost:3000", "null", "http://mozilla.github.io", "https://mozilla.github.io"];
 
   validateFileURL = function validateFileURL(file) {
     if (file === undefined) {
@@ -2170,9 +2172,10 @@ var validateFileURL;
           origin = _URL.origin,
           protocol = _URL.protocol;
 
-      if (origin !== viewerOrigin && protocol !== "blob:") {
-        throw new Error("file origin does not match viewer's");
-      }
+      //QXY custom changes: pretty URL
+      // if (origin !== viewerOrigin && protocol !== "blob:") {
+      //   throw new Error("file origin does not match viewer's");
+      // }
     } catch (ex) {
       var message = ex && ex.message;
       PDFViewerApplication.l10n.get("loading_error", null, "An error occurred while loading the PDF.").then(function (loadingErrorMessage) {
@@ -2226,89 +2229,116 @@ function webViewerInitialized() {
   var file;
   var queryString = document.location.search.substring(1);
   var params = (0, _ui_utils.parseQueryString)(queryString);
-  file = "file" in params ? params.file : _app_options.AppOptions.get("defaultUrl");
-  validateFileURL(file);
-  var fileInput = document.createElement("input");
-  fileInput.id = appConfig.openFileInputName;
-  fileInput.className = "fileInput";
-  fileInput.setAttribute("type", "file");
-  fileInput.oncontextmenu = _ui_utils.noContextMenuHandler;
-  document.body.appendChild(fileInput);
+  //file = "file" in params ? params.file : _app_options.AppOptions.get("defaultUrl");
 
-  if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-    appConfig.toolbar.openFile.setAttribute("hidden", "true");
-    appConfig.secondaryToolbar.openFileButton.setAttribute("hidden", "true");
-  } else {
-    fileInput.value = null;
-  }
-
-  fileInput.addEventListener("change", function (evt) {
-    var files = evt.target.files;
-
-    if (!files || files.length === 0) {
+  //QXY custom changes: pretty URL
+  const pdfServer = 'http://localhost:55000';
+  const fileNameArray = document.location.pathname.split('/');
+  const fileName = fileNameArray[fileNameArray.length-1];
+  if(!fileName){
+    fileName = fileNameArray[fileNameArray.length-2];
+    if(!fileName){
       return;
     }
+  }
 
-    PDFViewerApplication.eventBus.dispatch("fileinputchange", {
-      source: this,
-      fileInput: evt.target
-    });
-  });
-  appConfig.mainContainer.addEventListener("dragover", function (evt) {
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = "move";
-  });
-  appConfig.mainContainer.addEventListener("drop", function (evt) {
-    evt.preventDefault();
-    var files = evt.dataTransfer.files;
-
-    if (!files || files.length === 0) {
+  //QXY custom changes: pretty URL
+  fetch(pdfServer + '/files/' + fileName).then(response => {//../../files/
+    return response.json();
+  }).then(result => {
+    if(!result){
       return;
     }
+    file = result.url;
 
-    PDFViewerApplication.eventBus.dispatch("fileinputchange", {
-      source: this,
-      fileInput: evt.dataTransfer
+    validateFileURL(file);
+    var fileInput = document.createElement("input");
+    fileInput.id = appConfig.openFileInputName;
+    fileInput.className = "fileInput";
+    fileInput.setAttribute("type", "file");
+    fileInput.oncontextmenu = _ui_utils.noContextMenuHandler;
+    document.body.appendChild(fileInput);
+
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+      appConfig.toolbar.openFile.setAttribute("hidden", "true");
+      appConfig.secondaryToolbar.openFileButton.setAttribute("hidden", "true");
+    } else {
+      fileInput.value = null;
+    }
+
+    fileInput.addEventListener("change", function (evt) {
+      var files = evt.target.files;
+
+      if (!files || files.length === 0) {
+        return;
+      }
+
+      PDFViewerApplication.eventBus.dispatch("fileinputchange", {
+        source: this,
+        fileInput: evt.target
+      });
     });
-  });
-
-  if (!PDFViewerApplication.supportsDocumentFonts) {
-    _app_options.AppOptions.set("disableFontFace", true);
-
-    PDFViewerApplication.l10n.get("web_fonts_disabled", null, "Web fonts are disabled: unable to use embedded PDF fonts.").then(function (msg) {
-      console.warn(msg);
+    appConfig.mainContainer.addEventListener("dragover", function (evt) {
+      evt.preventDefault();
+      evt.dataTransfer.dropEffect = "move";
     });
-  }
+    appConfig.mainContainer.addEventListener("drop", function (evt) {
+      evt.preventDefault();
+      var files = evt.dataTransfer.files;
 
-  if (!PDFViewerApplication.supportsPrinting) {
-    appConfig.toolbar.print.classList.add("hidden");
-    appConfig.secondaryToolbar.printButton.classList.add("hidden");
-  }
+      if (!files || files.length === 0) {
+        return;
+      }
 
-  if (!PDFViewerApplication.supportsFullscreen) {
-    appConfig.toolbar.presentationModeButton.classList.add("hidden");
-    appConfig.secondaryToolbar.presentationModeButton.classList.add("hidden");
-  }
+      PDFViewerApplication.eventBus.dispatch("fileinputchange", {
+        source: this,
+        fileInput: evt.dataTransfer
+      });
+    });
 
-  if (PDFViewerApplication.supportsIntegratedFind) {
-    appConfig.toolbar.viewFind.classList.add("hidden");
-  }
+    if (!PDFViewerApplication.supportsDocumentFonts) {
+      _app_options.AppOptions.set("disableFontFace", true);
 
-  appConfig.mainContainer.addEventListener("transitionend", function (evt) {
-    if (evt.target === this) {
-      PDFViewerApplication.eventBus.dispatch("resize", {
-        source: this
+      PDFViewerApplication.l10n.get("web_fonts_disabled", null, "Web fonts are disabled: unable to use embedded PDF fonts.").then(function (msg) {
+        console.warn(msg);
       });
     }
-  }, true);
 
-  try {
-    webViewerOpenFileViaURL(file);
-  } catch (reason) {
-    PDFViewerApplication.l10n.get("loading_error", null, "An error occurred while loading the PDF.").then(function (msg) {
-      PDFViewerApplication.error(msg, reason);
-    });
-  }
+    if (!PDFViewerApplication.supportsPrinting) {
+      appConfig.toolbar.print.classList.add("hidden");
+      appConfig.secondaryToolbar.printButton.classList.add("hidden");
+    }
+
+    if (!PDFViewerApplication.supportsFullscreen) {
+      appConfig.toolbar.presentationModeButton.classList.add("hidden");
+      appConfig.secondaryToolbar.presentationModeButton.classList.add("hidden");
+    }
+
+    if (PDFViewerApplication.supportsIntegratedFind) {
+      appConfig.toolbar.viewFind.classList.add("hidden");
+    }
+
+    appConfig.mainContainer.addEventListener("transitionend", function (evt) {
+      if (evt.target === this) {
+        PDFViewerApplication.eventBus.dispatch("resize", {
+          source: this
+        });
+      }
+    }, true);
+
+    try {
+      webViewerOpenFileViaURL(file);
+    } catch (reason) {
+      PDFViewerApplication.l10n.get("loading_error", null, "An error occurred while loading the PDF.").then(function (msg) {
+        PDFViewerApplication.error(msg, reason);
+      });
+    }
+  
+  //QXY custom changes: pretty URL
+  }).catch(err => {
+    console.log(err);
+  });
+
 }
 
 var webViewerOpenFileViaURL;
