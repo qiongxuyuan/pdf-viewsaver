@@ -7,15 +7,16 @@ const uuid  = require('uuid');
 
 const AWS_KEY = process.env.AWS_SECRET_KEY_ID;
 const AWS_SECRET = process.env.AWS_SECRET_ACCESS_KEY;
-console.log(AWS_KEY);
+//console.log(AWS_KEY);
 const AWS_BUCKET = 'qxy-pdf';
 
 AWS.config.getCredentials(function(err) {
   if (err) console.log(err.stack);
   // credentials not loaded
   else {
-    console.log("Access key:", AWS.config.credentials.accessKeyId);
-    console.log("Secret access key:", 'AWS.config.credentials.secretAccessKey');
+    console.log('got AWS Credentials');
+  //  console.log("Access key:", AWS.config.credentials.accessKeyId);
+  //  console.log("Secret access key:", 'AWS.config.credentials.secretAccessKey');
   }
 });
 

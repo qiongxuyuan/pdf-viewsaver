@@ -2154,7 +2154,7 @@ var validateFileURL;
 {
 
   //QXY custom changes: pretty URL
-  var HOSTED_VIEWER_ORIGINS = ["https://qxy-pdf.s3.amazonaws.com", "http://localhost:3000", "null", "http://mozilla.github.io", "https://mozilla.github.io"];
+  var HOSTED_VIEWER_ORIGINS = ["https://qxy-pdf.s3.amazonaws.com", "http://localhost:3000", "http://localhost:55000", "null", "http://mozilla.github.io", "https://mozilla.github.io"];
 
   validateFileURL = function validateFileURL(file) {
     if (file === undefined) {
@@ -2172,10 +2172,9 @@ var validateFileURL;
           origin = _URL.origin,
           protocol = _URL.protocol;
 
-      //QXY custom changes: pretty URL
-      // if (origin !== viewerOrigin && protocol !== "blob:") {
-      //   throw new Error("file origin does not match viewer's");
-      // }
+      if (origin !== viewerOrigin && protocol !== "blob:") {
+        throw new Error("file origin does not match viewer's");
+      }
     } catch (ex) {
       var message = ex && ex.message;
       PDFViewerApplication.l10n.get("loading_error", null, "An error occurred while loading the PDF.").then(function (loadingErrorMessage) {
@@ -2233,12 +2232,24 @@ function webViewerInitialized() {
 
   //QXY custom changes: pretty URL
   const pdfServer = 'http://localhost:55000';
-  const fileNameArray = document.location.pathname.split('/');
-  const fileName = fileNameArray[fileNameArray.length-1];
-  if(!fileName){
-    fileName = fileNameArray[fileNameArray.length-2];
-    if(!fileName){
+  let fileName = '';
+  if('name' in params){
+    fileName = params.name;
+  }
+  else if('file' in params){
+    fileName = params.file;
+  }
+  else{
+    const fileNameArray = document.location.pathname.split('/');
+    if('viewer.html' in fileNameArray){
       return;
+    }
+    fileName = fileNameArray[fileNameArray.length-1];
+    if(!fileName){
+      fileName = fileNameArray[fileNameArray.length-2];
+      if(!fileName){
+        return;
+      }
     }
   }
 
