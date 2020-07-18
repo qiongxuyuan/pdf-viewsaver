@@ -3,10 +3,41 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import Header from './components/header'
+import Footer from './components/footer'
+import NotFoundPage from './pages/notfound-page'
+import UploadPage from './pages/upload-page'
+import ViewPage from './pages/view-page'
+
+const AppLayout = () => {
+  return (
+    <Router>
+      <div>
+        <Header />
+        <div>
+          <Switch>
+            <Route exact path="/" ><App /></Route>
+            <Route path="/upload" ><UploadPage></UploadPage></Route>
+            <Route path="/view"><ViewPage /></Route>
+            <Route path="*" ><NotFoundPage /></Route>
+          </Switch>
+        </div>
+        <Footer></Footer>
+      </div>
+    </Router>
+  );
+
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AppLayout />
   </React.StrictMode>,
   document.getElementById('root')
 );
