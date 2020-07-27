@@ -24,6 +24,7 @@ const fileuploadAWS = (req, res) => {
 
 const getFile = (req, res) => {
     const fileName = req.params.name;
+    const checkExists = req.query.checkexists;
     getRecord(FilesTable, {name: fileName}).then( result => {
         console.log(result);
         if(!result){
@@ -31,7 +32,10 @@ const getFile = (req, res) => {
             return;
         }
         const awsFileName = result.name;
-        const url = getSignedUrlS3GET(awsFileName);
+        let url = '';
+        if(checkExists !== 'true'){
+            url = getSignedUrlS3GET(awsFileName);
+        }
         res.json({message: 'OK', file: result, url: url});
     }).catch(err => {
         console.log(err);

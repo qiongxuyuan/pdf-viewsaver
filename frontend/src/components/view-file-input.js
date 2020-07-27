@@ -38,10 +38,10 @@ const ViewFileInput = (props) => {
         console.log('file:', fileName);
         const fileViewUrl = ServerHostUrl + ViewFilePath + fileName;
         const fileGetUrl = ServerHostUrl + GetFilePath + fileName;
-        axios.get(fileGetUrl).then(response => {
+        axios.get(fileGetUrl + '?checkexists=true').then(response => {
             console.log(response.data);
             const awsFileRes = response.data;
-            if(awsFileRes.file && awsFileRes.url){
+            if(awsFileRes.file && awsFileRes.message === 'OK'){
                 document.location = fileViewUrl;
                 //console.log(awsFileRes.url);
                 //redirect to awsFile.url
