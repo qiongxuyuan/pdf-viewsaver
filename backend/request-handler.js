@@ -4,7 +4,18 @@ const {getSignedUrlS3PUT, getSignedUrlS3GET} = require('./aws-s3');
 const {getRecord, saveRecord, deleteRecord, getConnTable, FilesTable} = require('./mongodbOps');
 
 const fileuploadAWS = (req, res) => {
-    const awsFilename = uuid.v4() + '-' + req.query.name;
+    if(!req.query.name){
+        res.status(400).send({message: 'bad request'});
+        return;
+    }
+    const nameParts = req.query.name.split('.');
+    let fileNameTemp = req.query.name;
+    let fileExtension = '';
+    if(nameParts.length > 0){
+        fileExtension = nameParts[nameParts.length - 1];
+        fileNameTemp = nameParts.slice(0, nameParts.length-1).join('.');
+    }
+    const awsFilename = fileNameTemp + '-' + uuid.v4() + '.' + fileExtension;
     const signedUrl = getSignedUrlS3PUT(awsFilename);
     res.send(
         {signedUrl: signedUrl, uploadName: awsFilename}

@@ -15,16 +15,17 @@ import NotFoundPage from './pages/notfound-page'
 import UploadPage from './pages/upload-page'
 import ViewPage from './pages/view-page'
 
+
 const AppLayout = () => {
   return (
     <Router>
       <div>
         <Header />
-        <div>
+        <div style={{minHeight: '200px'}}>
           <Switch>
-            <Route exact path="/" ><App /></Route>
-            <Route path="/upload" ><UploadPage></UploadPage></Route>
-            <Route path="/view"><ViewPage /></Route>
+            {/* <Route exact path="/" ><App /></Route> */}
+            <Route exact path="/" ><UploadPage></UploadPage></Route>
+            {/* <Route path="/view"><ViewPage /></Route> */}
             <Route path="*" ><NotFoundPage /></Route>
           </Switch>
         </div>
