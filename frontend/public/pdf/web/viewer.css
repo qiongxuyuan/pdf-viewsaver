@@ -2407,3 +2407,9 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
     display: none;
   }
 }
+
+.qxyPDFHome {
+  vertical-align: middle;
+  text-align: center;
+  text-decoration: none;
+}
