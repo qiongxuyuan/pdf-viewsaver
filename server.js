@@ -16,7 +16,9 @@ app.use(cors());
 
 //app.use(express.static(path.join(__dirname, 'frontend/build')));
 app.use('/pdf', express.static(path.join(__dirname, 'frontend/build/pdf')));
-app.get('/', express.static(path.join(__dirname, 'frontend/build/index.html')));
+app.use(express.static(path.join(__dirname, 'frontend/build/static')));
+app.use(express.static(path.join(__dirname, 'frontend/build')));
+
 
 //app.get('/testdb', getTestDB);
 
@@ -36,4 +38,8 @@ app.get('/pdf/web/:name', (req, res) => {
         return;
     }
     res.sendFile(path.join(__dirname, '/frontend/build/pdf/web/viewer.html'));
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend/build/index.html'));
 });
