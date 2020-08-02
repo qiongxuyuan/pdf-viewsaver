@@ -2154,7 +2154,7 @@ var validateFileURL;
 {
 
   //QXY custom changes: pretty URL
-  var HOSTED_VIEWER_ORIGINS = ["https://qxy-pdf.s3.amazonaws.com", "http://localhost:3000", "http://localhost:55000", "null", "http://mozilla.github.io", "https://mozilla.github.io"];
+  var HOSTED_VIEWER_ORIGINS = ["http://qxypdf-env.eba-mjj63xdw.us-east-1.elasticbeanstalk.com", "https://qxy-pdf.s3.amazonaws.com", "http://localhost:3000", "http://localhost:55000", "null", "http://mozilla.github.io", "https://mozilla.github.io"];
 
   validateFileURL = function validateFileURL(file) {
     if (file === undefined) {

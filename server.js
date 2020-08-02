@@ -16,6 +16,7 @@ app.use(cors());
 
 //app.use(express.static(path.join(__dirname, 'frontend/build')));
 app.use('/pdf', express.static(path.join(__dirname, 'frontend/build/pdf')));
+app.get('/', express.static(path.join(__dirname, 'frontend/build/index.html')));
 
 //app.get('/testdb', getTestDB);
 
