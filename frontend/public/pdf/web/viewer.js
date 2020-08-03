@@ -2231,7 +2231,8 @@ function webViewerInitialized() {
   //file = "file" in params ? params.file : _app_options.AppOptions.get("defaultUrl");
 
   //QXY custom changes: pretty URL
-  const pdfServer = 'http://localhost:55000';
+  //const pdfServer = 'http://localhost:55000';
+  const pdfServer = 'http://qxypdf-env.eba-mjj63xdw.us-east-1.elasticbeanstalk.com';
   let fileName = '';
   if('name' in params){
     fileName = params.name;

@@ -4,12 +4,12 @@ const DB_HOST = process.env.DB_HOST;
 const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 console.log('Connecting to DB: ' + DB_HOST);
-const url = 'mongodb://' + DB_USER + ':' + DB_PASSWORD + DB_HOST;
 
 
 const DBName = 'pdf';
 const FilesTable = 'files';
 const mClient = mongoDB.MongoClient;
+const url = 'mongodb://' + DB_USER + ':' + DB_PASSWORD + '@' + DB_HOST + '/' + DBName;
 
 exports.getTestDB = (req, res) => {
     mongoDB.MongoClient.connect(url, {useNewUrlParser: true}, (err, client) => {
